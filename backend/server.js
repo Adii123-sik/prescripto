@@ -4,6 +4,7 @@
  dotenv.config();
  import connectDB from "./config/mongoDb.js"
  import connectCloudinary from "./config/cloudinary.js"
+import adminRouter from "./routes/adminRoute.js";
 
 
 
@@ -23,6 +24,9 @@
 
 
  //  API endpoints
+
+
+ app.use("/api/admin",adminRouter)
 
  app.get("/",(req,res)=>{
     res.send("api is working");
