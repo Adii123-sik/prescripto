@@ -60,7 +60,16 @@ const AddDoctor = () => {
         toast.success(data.data.message)
         setDocImg(false)
         setName('')
-        
+        setEmail('')
+        setPassword('')
+        setExperience('1 Year')
+        setFees('')
+        setSpeciality('General Physician')
+        setDegree('')
+        setAbout('')
+        setAddress1('')
+        setAddress2('')
+
       }else{
         toast.error(data.data.message)
       }
@@ -108,7 +117,7 @@ const AddDoctor = () => {
             </div>
             <div className='flex-1 flex flex-col gap-1'>
               <p>Experience</p>
-              <select onChange={(e)=>setExperience(e.target.value)} value={experience} className='border rounded px-3 py-2' name="" id="">
+              <select onChange={(e)=>setExperience(e.target.value)} value={experience} className='border rounded px-3 py-2' >
                 <option value="1 year">1 year</option>
                 <option value="2 years">2 years</option>
                 <option value="3 years">3 years</option>
@@ -134,7 +143,7 @@ const AddDoctor = () => {
             {/* Move Speciality to the top */}
             <div className='flex-1 flex flex-col gap-1'>
               <p>Speciality</p>
-              <select onChange={(e)=>setSpeciality(e.target.value)} value={speciality} className='border rounded px-3 py-2' name="" id="">
+              <select onChange={(e)=>setSpeciality(e.target.value)} value={speciality} className='border rounded px-3 py-2' >
                 <option value="General physician">General physician</option>
                 <option value="Gynecologist">Gynecologist</option>
                 <option value="Dermatologist">Dermatologist</option>

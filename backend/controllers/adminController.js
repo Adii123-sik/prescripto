@@ -122,7 +122,7 @@ const allDoctors=async (req,res)=>{
         res.json({success:false,message:"Error"})
     }
 }
-
+ 
 
 
 export {addDoctor,loginAdmin,allDoctors}
