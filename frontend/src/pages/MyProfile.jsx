@@ -1,28 +1,74 @@
-import React, { useState } from 'react'
+import React, { useState ,useContext } from 'react'
+import { AppContext } from '../context/Context'
 import { assets } from '../assets/assets'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+
 
 const MyProfile = () => {
 
-
-  const [userData, setUserData] = useState({
-    name: 'Aditya Sikarwar',
-    image: assets.profile_pic,
-    email: 'asik@gmail.com',
-    phone: '+1 123 1234 8988',
-    address: {
-      line1: "157 Sobran kunj",
-      line2: "kakretha ,Sikandra Road ,Agra"
-    },
-    gender: "Male",
-    dob: "12-08-2009",
-
-  })
+  const { userData, setUserData ,token,backendUrl,loadUserProfileData } = useContext(AppContext)
 
   const [isEdit, setIsEdit] = useState(false)
-  return (
+  const [image, setImage] = useState(false)
+
+
+  const updateUserProfileData = async  () => {
+
+    try{
+
+      const formData = new FormData();
+
+      formData.append('name' ,userData.name)
+      formData.append('phone' ,userData.phone)
+      formData.append('address' ,JSON.stringify(userData.address))
+      formData.append('dob' ,userData.dob)
+      formData.append('gender' ,userData.gender)
+
+
+      image && formData.append('image' ,image)
+
+
+      const {data} = await axios.post(backendUrl + '/api/user/update-profile' , formData , {headers :{token}})
+
+      if(data.success){
+        toast.success(data.message)
+        await loadUserProfileData()
+        setIsEdit(false)
+        setImage(false)
+
+      }else{
+        toast.error(data.message)
+      }
+
+    }catch(error){
+      console.log(error);
+      toast.error(error.message);
+    }
+  }
+
+  return userData && (
     <div className='max-w-lg flex flex-col gap-2 text-sm'>
 
-      <img className='w-36 rounded' src={userData.image} alt="" />
+      {
+
+        isEdit ?
+        <label htmlFor="image">
+
+          <div className='inline-block relative cursor-pointer'>
+
+            <img className='w-36 rounded opacity-75' src={image ? URL.createObjectURL(image) : userData.image} alt="" />
+            <img className='w-10  absolute bottom-12 right-12' src={image ? '' :assets.upload_icon} alt="" />
+
+          </div>
+
+          <input onChange={(e) => setImage(e.target.files[0])} type="file" id='image' hidden />
+
+        </label>
+        :<img className='w-36 rounded' src={userData.image} alt="" />
+      }
+
+      
 
       {
         isEdit
@@ -46,9 +92,9 @@ const MyProfile = () => {
           {
             isEdit
               ? <p>
-                <input className='bg-gray-50' onChange={(e) => setUserData(prev => ({ ...prev, address, line1: e.target.value }))} value={userData.address.line1} type="text" />
+                <input className='bg-gray-50' onChange={e => setUserData(prev => ({ ...prev, address: { ...prev.address, line1: e.target.value } }))} value={userData.address.line1} type="text" />
                 <br />
-                <input className='bg-gray-50' onChange={(e) => setUserData(prev => ({ ...prev, address, line2: e.target.value }))} value={userData.address.line2} type="text" />
+                <input className='bg-gray-50' onChange={e => setUserData(prev => ({ ...prev, address: { ...prev.address, line2: e.target.value } }))} value={userData.address.line2} type="text" />
               </p>
               : <p className='text-gray-500'>
                 {userData.address.line1}
@@ -85,7 +131,7 @@ const MyProfile = () => {
 
         {
           isEdit
-          ? <button className='border border-blue-400 px-8 py-2 rounded-full hover:bg-blue-400 hover:text-white transition-all ' onClick={()=>setIsEdit(false)}>Save information</button>
+          ? <button className='border border-blue-400 px-8 py-2 rounded-full hover:bg-blue-400 hover:text-white transition-all ' onClick={updateUserProfileData}>Save information</button>
           : <button className='border border-blue-400 px-8 py-2 rounded-full  hover:bg-blue-400 hover:text-white transition-all ' onClick={()=>setIsEdit(true)}>Edit</button>
         }
       </div>
@@ -94,4 +140,4 @@ const MyProfile = () => {
   )
 }
 
-export default MyProfile
+export default MyProfile 
