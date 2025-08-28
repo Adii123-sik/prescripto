@@ -68,13 +68,33 @@ const Appointment = () => {
 
        while(currentDate <endTime){
         let formattedTime=currentDate.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit' })
-         
-        //add slot to array
 
-        timeSlots.push({
+        let day= currentDate.getDate()
+        let month=currentDate.getMonth()+1
+        let year=currentDate.getFullYear()
+
+  const slotDate= day + '_' + month + '_' + year;
+  const slotTime= formattedTime;
+
+  const slotsBooked = docInfo && docInfo.slots_booked ? docInfo.slots_booked : {};
+  const isSlotAvailable = slotsBooked[slotDate] && slotsBooked[slotDate].includes(slotTime) ? false : true;
+
+
+         //add slot to array
+
+        if(isSlotAvailable){
+
+
+           timeSlots.push({
           datetime:new Date(currentDate),
           time:formattedTime
         })
+
+
+        }
+
+       
+       
 
         //increment current time by 30 min
 
@@ -193,12 +213,14 @@ const Appointment = () => {
         </div>
 
         <div className='flex items-center gap-3 w-full overflow-x-scroll mt-4'>
-          {docSlots.length && docSlots[slotIndex].map((item,index)=>(
+          {docSlots.length > 0 && docSlots[slotIndex] && docSlots[slotIndex].map((item,index)=>(
             <p onClick={()=>setSlotTime(item.time)} className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer ${item.time===slotTime ? 'bg-blue-400 text-white' : 'text-gray-400 border border-t-gray-300'}`} key={index}>
               {item.time.toLowerCase()}
             </p>
-
           ))}
+          {(!docSlots.length || !docSlots[slotIndex]) && (
+            <span className='text-gray-400'>No slots available</span>
+          )}
         </div>
 
         <button onClick={bookAppointment} className='bg-blue-400 text-white text-sm font-light px-14 py-3 rounded-full my-6'>Book an appointment</button>
