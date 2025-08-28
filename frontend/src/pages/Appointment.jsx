@@ -3,12 +3,18 @@ import { useParams } from 'react-router-dom'
 import { AppContext } from '../context/Context';
 import { assets } from '../assets/assets';
 import RelatedDoctor from '../components/RelatedDoctor';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios'; 
 
 const Appointment = () => {
 
   const {docId}=useParams();
-  const {doctors,currencySymbol}=useContext(AppContext);
+  const {doctors,currencySymbol,backendUrl,token,getDoctorsData}=useContext(AppContext);
   const daysOfWeek =['SUN','MON','TUE','WED','THU','FRI','SAT']
+
+
+  const navigate=useNavigate()
 
 
   const [docInfo,setDocInfo]=useState(null)
@@ -78,6 +84,44 @@ const Appointment = () => {
        setDocSlots(prev=>([...prev,timeSlots]))
     }
 
+  }
+
+  const bookAppointment = async () => {
+    
+      if(!token) {
+        toast.warn('You need to be logged in to book an appointment');
+        return navigate('/login');
+      }
+
+
+      try {
+
+        const date=docSlots[slotIndex][0].datetime;
+
+        let day=date.getDate()
+        let month=date.getMonth()+1
+        let year=date.getFullYear()
+
+        const slotDate= day + '_' + month + '_' + year;
+
+        const {data} = await axios.post(backendUrl + '/api/user/book-appointment', {
+          docId,
+          slotDate,
+          slotTime
+        }, { headers: { token } });
+
+        if(data.success){
+          toast.success(data.message)
+          getDoctorsData()
+          navigate('/my-appointments')
+        }else{
+          toast.error(data.message)
+        }
+
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
   }
 
 
@@ -157,7 +201,7 @@ const Appointment = () => {
           ))}
         </div>
 
-        <button className='bg-blue-400 text-white text-sm font-light px-14 py-3 rounded-full my-6'>Book an appointment</button>
+        <button onClick={bookAppointment} className='bg-blue-400 text-white text-sm font-light px-14 py-3 rounded-full my-6'>Book an appointment</button>
 
       </div>
 
