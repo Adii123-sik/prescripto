@@ -4,7 +4,7 @@ import bcrypt from "bcrypt"
 import {v2 as cloudinary} from "cloudinary"
 import doctorModel from "../models/doctorModel.js"
 import jwt from "jsonwebtoken"
-
+import appointmentModel from "../models/appointmentModel.js"
 
 
 //API for adding doctors
@@ -122,7 +122,21 @@ const allDoctors=async (req,res)=>{
         res.json({success:false,message:"Error"})
     }
 }
- 
+
+//API TO get all appointments for admin panel
+
+const appointmentsAdmin=async (req,res)=>{
+
+    try{
+
+        const appointments=await appointmentModel.find({})
+        res.json({success:true,appointments})
+
+    }catch(error){
+        console.log(error);
+        res.json({success:false,message:"Error"})
+    }
+}
 
 
-export {addDoctor,loginAdmin,allDoctors}
+export {addDoctor,loginAdmin,allDoctors,appointmentsAdmin}

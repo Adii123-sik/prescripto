@@ -15,11 +15,12 @@ const MyAppoitments = () => {
   const [appointments, setAppointments] = React.useState([]);
   const month = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
  
-  const navigate = useNavigate();
+  
   const slotDateFormate = (slotDate) => {
     const dateArray = slotDate.split('_');
     return dateArray[0] + ' ' + month[Number(dateArray[1])] + '  ' + dateArray[2];
   };
+  const navigate = useNavigate(); 
 
   const getUserAppointments = async () => {
     try {
